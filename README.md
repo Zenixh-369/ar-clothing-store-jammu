@@ -1,13 +1,28 @@
-# AR Clothing — full-stack storefront
+# AR Clothing — storefront and product admin
 
-A multi-page Next.js App Router shop with Menswear, Womenswear, Tops, Bottomwear, Jackets, Footwear, Accessories, and New Arrivals categories with a custom floating cursor, editorial home page, category and product pages, persistent browser cart, server-side product API, validated checkout, and order recording.
+A Next.js storefront with a password-protected product dashboard. The dashboard edits the shared Supabase catalog, so product changes, prices, categories, and uploaded images appear on the storefront without editing code.
 
-## Start locally
+## Run locally
 
 1. Install Node.js 20.9 or newer.
 2. Run `npm install`.
-3. Run `npm run dev` and open the local address printed in the terminal.
+3. Copy `.env.example` to `.env.local` and fill in the values described below.
+4. Run `npm run dev` and open the local address printed in the terminal.
 
-Use `npm run build` and `npm start` for a production build. `GET /api/products` serves the product catalog. `POST /api/orders` validates items against server-side prices, validates products against server-side prices and returns a WhatsApp handoff without writing orders to the local filesystem. The customer is redirected to WhatsApp with order ID, item names, sizes, quantities, subtotal, and shipping details and the selected payment preference. Payment is not processed on the site; the preference is confirmed with the shop in WhatsApp. Set `WHATSAPP_PHONE` to override the default international number `918899279169` (digits only).
+## Connect Supabase
 
-The app uses a sample catalog and USD prices. Replace the catalog, contact details, and imagery before launch. The order file is suitable for a local starter; use a managed database for multi-instance production and connect a payment provider if you want card checkout.
+1. Create a Supabase project.
+2. In the Supabase SQL Editor, run [`supabase/setup.sql`](supabase/setup.sql). It creates the products table, adds the starter catalog, and creates the public `products` image bucket.
+3. In **Project Settings → API Keys**, copy the project URL and create or copy a `secret` key. Keep it server-side; never prefix it with `NEXT_PUBLIC_`. The app also accepts the legacy `service_role` key as `SUPABASE_SERVICE_ROLE_KEY`.
+4. Set these environment variables in `.env.local` for local development and in Vercel under **Project Settings → Environment Variables** for the deployed site:
+   - `SUPABASE_URL` — project URL.
+   - `SUPABASE_SECRET_KEY` — server-only Supabase secret key. If using an existing legacy key, use `SUPABASE_SERVICE_ROLE_KEY` instead.
+   - `ADMIN_PASSWORD` — a long, unique dashboard password.
+   - `ADMIN_SESSION_SECRET` — a random secret at least 32 characters long.
+   - `WHATSAPP_PHONE` — optional; WhatsApp number in international digits with no `+`, spaces, or punctuation.
+   - `NEXT_PUBLIC_WHATSAPP_PHONE` — set to the same number for checkout's API-failure fallback.
+5. Restart the local dev server or redeploy the Vercel project after changing environment variables.
+
+Open `/admin` on the site to sign in. The dashboard can add, edit, search, and delete products; set price, category, collections, featured and new arrival status; and upload product images. Images accept JPG, PNG, WebP, and AVIF up to 4 MB. The storefront reads the catalog directly from Supabase for each request. Existing items in a customer's bag refresh to the latest price when the bag opens.
+
+Without Supabase environment variables, the storefront uses the starter catalog in `lib/products.js`; admin editing and uploads are unavailable. Checkout sends the order to WhatsApp and does not process payment or save an order record in a database.
