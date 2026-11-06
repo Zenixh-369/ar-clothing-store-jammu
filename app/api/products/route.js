@@ -1,0 +1,2 @@
+import {NextResponse} from 'next/server';import {products,filterProducts} from '../../../lib/products';
+export async function GET(request){const {searchParams}=new URL(request.url);const category=searchParams.get('category');const q=searchParams.get('q')?.toLowerCase();let result=category?filterProducts(category):products;if(q)result=result.filter(p=>`${p.name} ${p.category} ${p.collections.join(' ')} ${p.color} ${p.description}`.toLowerCase().includes(q));return NextResponse.json({products:result})}
