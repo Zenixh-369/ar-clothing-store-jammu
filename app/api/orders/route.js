@@ -32,7 +32,8 @@ export async function POST(request){
     const address=[customer.street,customer.landmark&&`Landmark: ${customer.landmark}`,customer.city,customer.state,customer.postal,customer.country].filter(Boolean).join(', ');
     const location=customer.mapUrl?`\nMap pin: ${customer.mapUrl}`:'';
     const message=`Hello AR Clothing, I would like to confirm order ${orderId.slice(0,8).toUpperCase()}.\n\n${lines}\n\nSubtotal: ${formatPrice(subtotal)}\n\nPreferred payment: ${paymentMethod}\n\nShip to:\n${customer.name}\nPhone: ${customer.phone}\n${address}${location}`;
-    const phone=(process.env.WHATSAPP_PHONE||'918899279169').replace(/\D/g,'');
+    const phone=(process.env.WHATSAPP_PHONE||'').replace(/\D/g,'');
+    if(!phone)return NextResponse.json({error:'WhatsApp checkout is not configured.'},{status:503});
     return NextResponse.json({orderId,whatsappUrl:`https://wa.me/${phone}?text=${encodeURIComponent(message)}`},{status:201,headers:{'Cache-Control':'no-store'}});
   }catch(error){return NextResponse.json({error:error.message||'We could not prepare your WhatsApp order. Please try again.'},{status:500})}
 }

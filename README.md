@@ -19,8 +19,8 @@ A Next.js storefront with a password-protected product dashboard. The dashboard 
    - `SUPABASE_SECRET_KEY` — server-only Supabase secret key. If using an existing legacy key, use `SUPABASE_SERVICE_ROLE_KEY` instead.
    - `ADMIN_PASSWORD` — a long, unique dashboard password.
    - `ADMIN_SESSION_SECRET` — a random secret at least 32 characters long.
-   - `WHATSAPP_PHONE` — optional; WhatsApp number in international digits with no `+`, spaces, or punctuation.
-   - `NEXT_PUBLIC_WHATSAPP_PHONE` — set to the same number for checkout's API-failure fallback.
+   - `WHATSAPP_PHONE` — required; WhatsApp number in international digits with no `+`, spaces, or punctuation.
+   - `NEXT_PUBLIC_WHATSAPP_PHONE` — required; set to the same number for the client-side checkout fallback.
 5. Restart the local dev server or redeploy the Vercel project after changing environment variables.
 
 Open `/admin` on the site to sign in. The dashboard can add, edit, search, and delete products; set price, category, collections, featured and new arrival status; and upload product images. Images accept JPG, PNG, WebP, and AVIF up to 4 MB. The storefront reads the catalog directly from Supabase for each request. Existing items in a customer's bag refresh to the latest price when the bag opens.
