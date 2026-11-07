@@ -1,7 +1,7 @@
 import {NextResponse} from 'next/server';
 import {randomUUID} from 'node:crypto';
 import {getProduct} from '../../../lib/catalog';
-import {formatPrice} from '../../../lib/products';
+import {formatPrice,getProductImages} from '../../../lib/products';
 import {productImageUrl} from '../../../lib/image-url';
 
 const clean=(value,max=180)=>typeof value==='string'?value.trim().slice(0,max):'';
@@ -23,12 +23,16 @@ export async function POST(request){
       const size=clean(entry.size,12).toUpperCase();
       const quantity=Number(entry.quantity||1);
       const validSizes=product?.sizeType==='footwear'?['6','7','8','9','10','11','12']:product?.sizeType==='one-size'?['ONE']:['XS','S','M','L','XL'];
+      const requestedColor=clean(entry.color,80);
+      const selectedColor=product?.variants?.some(variant=>variant.color===requestedColor)?requestedColor:product?.color;
+      const validImages=getProductImages(product,selectedColor);
+      const selectedImage=validImages.includes(entry.image)?entry.image:validImages[0]||product?.image;
       if(!product||!validSizes.includes(size)||!Number.isInteger(quantity)||quantity<1||quantity>10)return NextResponse.json({error:'One of the selected items is invalid. Please refresh your bag.'},{status:400});
-      items.push({...product,size,quantity});
+      items.push({...product,color:selectedColor,image:selectedImage,size,quantity});
     }
     const subtotal=items.reduce((sum,item)=>sum+Number(item.price)*item.quantity,0);
     const orderId=randomUUID();
-    const lines=items.map((product,index)=>`${index+1}. ${product.name} · size ${product.size} · qty ${product.quantity} · ${formatPrice(product.price*product.quantity)}\nPhoto: ${productImageUrl(product.image,1000)}`).join('\n\n');
+    const lines=items.map((product,index)=>`${index+1}. ${product.name} · color ${product.color} · size ${product.size} · qty ${product.quantity} · ${formatPrice(product.price*product.quantity)}\nPhoto: ${productImageUrl(product.image,1000)}`).join('\n\n');
     const address=[customer.street,customer.landmark&&`Landmark: ${customer.landmark}`,customer.city,customer.state,customer.postal,customer.country].filter(Boolean).join(', ');
     const location=customer.mapUrl?`\nMap pin: ${customer.mapUrl}`:'';
     const message=`Hello AR Clothing, I would like to confirm order ${orderId.slice(0,8).toUpperCase()}.\n\n${lines}\n\nSubtotal: ${formatPrice(subtotal)}\n\nPreferred payment: ${paymentMethod}\n\nShip to:\n${customer.name}\nPhone: ${customer.phone}\n${address}${location}`;
