@@ -5,7 +5,7 @@ import {useCallback,useEffect,useMemo,useState} from 'react';
 const categories=['Menswear','Womenswear','Tops','Bottomwear','Jackets','Footwear','Accessories'];
 const collections=['menswear','womenswear','tops','bottomwear','jackets','footwear','accessories','new-arrivals'];
 const currency=new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0});
-const blankProduct={slug:'',name:'',category:'Tops',collections:[],price:'',description:'',material:'',color:'',badge:'',image:'',featured:false,newArrival:false,sizeType:'standard'};
+const blankProduct={slug:'',name:'',category:'Tops',collections:[],price:'',description:'',material:'',color:'',badge:'',image:'',images:[],variants:[],featured:false,newArrival:false,sizeType:'standard'};
 const slugify=value=>value.toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 
 export default function AdminPage(){
@@ -50,11 +50,16 @@ export default function AdminPage(){
   }
 
   function startNew(){setEditing('');setDraft({...blankProduct});setError('');setNotice('')}
-  function startEdit(product){setEditing(product.slug);setDraft({...product,collections:[...(product.collections||[])]});setError('');setNotice('')}
+  function startEdit(product){setEditing(product.slug);setDraft({...product,collections:[...(product.collections||[])],images:[...(product.images||product.image?[product.image]:[])],variants:(product.variants||[]).map(variant=>({...variant,images:[...(variant.images||[])]}))});setError('');setNotice('')}
   function update(field,value){setDraft(current=>({...current,[field]:value,...(field==='name'&&!editing?{slug:slugify(value)}:{})}))}
   function toggleCollection(value){
     setDraft(current=>({...current,collections:current.collections.includes(value)?current.collections.filter(item=>item!==value):[...current.collections,value]}));
   }
+
+  function addVariant(){setDraft(current=>({...current,variants:[...(current.variants||[]),{color:'',images:[]}]}))}
+  function updateVariant(index,field,value){setDraft(current=>({...current,variants:(current.variants||[]).map((variant,item)=>item===index?{...variant,[field]:value}:variant)}))}
+  function removeVariant(index){setDraft(current=>({...current,variants:(current.variants||[]).filter((_,item)=>item!==index)}))}
+  async function uploadVariantImage(file,index){if(!file)return;try{const form=new FormData();form.append('image',file);const response=await fetch('/api/admin/upload',{method:'POST',body:form});const data=await response.json();if(!response.ok)throw new Error(data.error||'Image upload failed.');setDraft(current=>({...current,variants:(current.variants||[]).map((variant,item)=>item===index?{...variant,images:[...new Set([...(variant.images||[]),data.url])]}:variant)}))}catch(exception){setError(exception.message)}}
 
   async function uploadImage(file){
     if(!file)return;
@@ -64,7 +69,7 @@ export default function AdminPage(){
       const response=await fetch('/api/admin/upload',{method:'POST',body:form});
       const data=await response.json();
       if(!response.ok)throw new Error(data.error||'Image upload failed.');
-      update('image',data.url);setNotice('Image uploaded. Save the product to publish it.');
+      setDraft(current=>({...current,image:current.image||data.url,images:[...new Set([...(current.images||[]),data.url])]}));setNotice('Image uploaded. Save the product to publish it.');
     }catch(exception){setError(exception.message)}finally{setUploading(false)}
   }
 
@@ -116,6 +121,8 @@ export default function AdminPage(){
         <div className="admin-field-wide admin-collections"><span>Collections</span><div>{collections.map(value=><label key={value}><input type="checkbox" checked={draft.collections.includes(value)} onChange={()=>toggleCollection(value)}/>{value.replaceAll('-',' ')}</label>)}</div></div>
         <label className="admin-field-wide">Product image URL<input value={draft.image} onChange={event=>update('image',event.target.value)} placeholder="Paste an image URL or upload below" required/></label>
         <label className="admin-upload admin-field-wide">Upload image<input type="file" accept="image/jpeg,image/png,image/webp,image/avif" onChange={event=>uploadImage(event.target.files?.[0])}/><small>{uploading?'Uploading image…':'JPG, PNG, WebP or AVIF · 4 MB max'}</small></label>
+        <div className="admin-field-wide admin-variants"><span>Color variants and their photos</span>{(draft.variants||[]).map((variant,index)=><div className="admin-variant" key={index}><div><input maxLength="80" placeholder="Color name, e.g. Black" value={variant.color} onChange={event=>updateVariant(index,'color',event.target.value)}/><textarea rows="2" placeholder="Variant photo URLs, one per line" value={(variant.images||[]).join('\n')} onChange={event=>updateVariant(index,'images',event.target.value.split(/\n|,/).map(value=>value.trim()).filter(Boolean))}/><div className="admin-variant-images">{(variant.images||[]).map(image=><img key={image} src={/^https?:\/\//i.test(image)?image:`https://images.unsplash.com/${image}?auto=format&fit=crop&w=120&q=75`} alt=""/>)}</div><label className="admin-upload">Upload variant photos<input type="file" multiple accept="image/jpeg,image/png,image/webp,image/avif" onChange={event=>Promise.all([...event.target.files].map(file=>uploadVariantImage(file,index)))}/></label></div><button type="button" onClick={()=>removeVariant(index)}>Remove variant</button></div>)}<button className="admin-add-variant" type="button" onClick={addVariant}>+ Add color variant</button></div>
+        <label className="admin-field-wide">Additional product photo URLs<textarea rows="3" value={(draft.images||[]).filter(image=>image!==draft.image).join('\n')} onChange={event=>update('images',[draft.image,...event.target.value.split(/\n|,/).map(value=>value.trim()).filter(Boolean)])} placeholder="One image URL per line"/></label><label className="admin-upload admin-field-wide">Upload additional photos<input type="file" multiple accept="image/jpeg,image/png,image/webp,image/avif" onChange={event=>Promise.all([...event.target.files].map(uploadImage))}/><small>{uploading?'Uploading images…':'JPG, PNG, WebP or AVIF · 4 MB each'}</small></label>
         <div className="admin-field-wide admin-flags"><label><input type="checkbox" checked={draft.featured} onChange={event=>update('featured',event.target.checked)}/>Show in featured collection</label><label><input type="checkbox" checked={draft.newArrival} onChange={event=>update('newArrival',event.target.checked)}/>Mark as new arrival</label></div>
       </div>{error&&<p className="admin-error" role="alert">{error}</p>}<footer><button type="button" className="admin-secondary" onClick={()=>setDraft(null)}>Cancel</button><button className="admin-primary" disabled={busy||uploading}>{busy?'Saving…':editing?'Save product':'Add to catalog'}</button></footer></form>
     </section></div>}

@@ -9,6 +9,8 @@ create table if not exists public.products (
   color text not null default '',
   badge text not null default '',
   image text not null,
+  images text[] not null default '{}',
+  variants jsonb not null default '[]'::jsonb,
   featured boolean not null default false,
   "newArrival" boolean not null default false,
   "sizeType" text not null default 'standard' check ("sizeType" in ('standard','one-size','footwear')),
@@ -17,6 +19,9 @@ create table if not exists public.products (
 
 alter table public.products enable row level security;
 grant select,insert,update,delete on table public.products to service_role;
+
+alter table public.products add column if not exists images text[] not null default '{}';
+alter table public.products add column if not exists variants jsonb not null default '[]'::jsonb;
 
 insert into public.products (slug,name,category,collections,price,description,material,color,badge,image,featured,"newArrival","sizeType") values
 ('everyday-shirt','The Everyday Shirt','Tops',array['menswear','tops'],78,'An easy, beautifully cut shirt made from crisp natural cotton. Designed to soften with every wear and go with just about everything.','100% organic cotton','Chalk','Everyday essential','photo-1598554747436-c9293d6a588f',true,false,'standard'),
