@@ -11,9 +11,9 @@ export async function POST(request){
   try{
     const body=await request.json();
     const customerInput=body.customer||{};
-    const customer={name:clean(customerInput.name,100),phone:clean(customerInput.phone,30),street:clean(customerInput.street),landmark:clean(customerInput.landmark,140),city:clean(customerInput.city,100),state:clean(customerInput.state,100),postal:clean(customerInput.postal,30),country:clean(customerInput.country,100),mapUrl:clean(customerInput.mapUrl,500)};
+    const customer={name:clean(customerInput.name,100),phone:clean(customerInput.phone,30),street:clean(customerInput.street),landmark:clean(customerInput.landmark,140),city:clean(customerInput.city,100),state:clean(customerInput.state,100),postal:clean(customerInput.postal,30),country:'India',mapUrl:clean(customerInput.mapUrl,500)};
     const paymentMethod=clean(customerInput.paymentMethod,40);
-    if(!customer.name||!customer.phone||!customer.street||!customer.city||!customer.state||!customer.postal||!customer.country)return NextResponse.json({error:'Enter a valid name, phone number, and complete shipping address.'},{status:400});
+    if(!customer.name||!customer.phone||!customer.street||!customer.city||!customer.state||!customer.postal)return NextResponse.json({error:'Enter a valid name, phone number, and complete shipping address in India.'},{status:400});
     if(!['UPI','Cash on delivery','Online payment link'].includes(paymentMethod))return NextResponse.json({error:'Choose a payment preference.'},{status:400});
     if(!Array.isArray(body.items)||body.items.length<1||body.items.length>30)return NextResponse.json({error:'Your bag is empty or contains too many items.'},{status:400});
     const items=[];

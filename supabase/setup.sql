@@ -33,6 +33,20 @@ insert into public.products (slug,name,category,collections,price,description,ma
 ('wide-leg-trouser','Wide Leg Trouser','Bottomwear',array['womenswear','bottomwear'],118,'A fluid wide-leg trouser cut from soft draping cotton with an adjustable waist and deep pockets.','Cotton lyocell blend','Black','New','photo-1594633312681-425c7b97ccd1',false,true,'standard')
 on conflict (slug) do nothing;
 
+-- Convert the starter catalog from its original USD values to INR at ₹90/USD.
+update public.products set price=7020 where slug='everyday-shirt';
+update public.products set price=9900 where slug='linen-trouser';
+update public.products set price=8640 where slug='soft-form-knit';
+update public.products set price=3780 where slug='everywhere-tote';
+update public.products set price=13320 where slug='weekend-jacket';
+update public.products set price=4320 where slug='ribbed-tank';
+update public.products set price=3240 where slug='everyday-cap';
+update public.products set price=11520 where slug='sunday-dress';
+update public.products set price=8820 where slug='everyday-denim';
+update public.products set price=10800 where slug='court-sneaker';
+update public.products set price=15120 where slug='utility-overshirt';
+update public.products set price=10620 where slug='wide-leg-trouser';
+
 insert into storage.buckets (id,name,public,file_size_limit,allowed_mime_types)
 values ('products','products',true,4194304,array['image/jpeg','image/png','image/webp','image/avif'])
 on conflict (id) do update set public=true,file_size_limit=4194304,allowed_mime_types=excluded.allowed_mime_types;

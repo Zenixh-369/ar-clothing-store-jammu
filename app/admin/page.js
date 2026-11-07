@@ -4,9 +4,9 @@ import {useCallback,useEffect,useMemo,useState} from 'react';
 
 const categories=['Menswear','Womenswear','Tops','Bottomwear','Jackets','Footwear','Accessories'];
 const collections=['menswear','womenswear','tops','bottomwear','jackets','footwear','accessories','new-arrivals'];
+const currency=new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0});
 const blankProduct={slug:'',name:'',category:'Tops',collections:[],price:'',description:'',material:'',color:'',badge:'',image:'',featured:false,newArrival:false,sizeType:'standard'};
 const slugify=value=>value.toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-const currency=new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:2});
 
 export default function AdminPage(){
   const [authorized,setAuthorized]=useState(false);
@@ -106,7 +106,7 @@ export default function AdminPage(){
       <form onSubmit={saveProduct}><div className="admin-form-grid">
         <label>Product name<input required maxLength="100" value={draft.name} onChange={event=>update('name',event.target.value)}/></label>
         <label>URL slug<input required maxLength="100" value={draft.slug} onChange={event=>update('slug',slugify(event.target.value))}/></label>
-        <label>Price (USD)<input required type="number" min="0.01" step="0.01" value={draft.price} onChange={event=>update('price',event.target.value)}/></label>
+        <label>Price (INR)<input required type="number" min="1" step="1" value={draft.price} onChange={event=>update('price',event.target.value)}/></label>
         <label>Category<select value={draft.category} onChange={event=>update('category',event.target.value)}>{categories.map(category=><option key={category} value={category}>{category}</option>)}</select></label>
         <label>Color<input maxLength="80" value={draft.color} onChange={event=>update('color',event.target.value)}/></label>
         <label>Material<input maxLength="160" value={draft.material} onChange={event=>update('material',event.target.value)}/></label>
