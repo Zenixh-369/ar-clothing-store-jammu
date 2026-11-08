@@ -1,9 +1,79 @@
 import Link from 'next/link';
-import ProductCard from '../components/ProductCard';
-import {getProducts} from '../lib/catalog';
+import { getProducts } from '../lib/catalog';
+import HeroSection from '../components/HeroSection';
+import MarqueeStrip from '../components/MarqueeStrip';
 import CategoryShowcase from '../components/CategoryShowcase';
+import CuratedShowcase from '../components/CuratedShowcase';
 
-export default async function Home(){
-  const products=await getProducts();
-  return <><section className="hero"><div className="hero-copy"><div className="eyebrow"><span className="eyebrow-line"/>Jammu, India · Everyday, considered</div><h1>Wear the<br/><em>feeling.</em></h1><p className="hero-intro">An easier kind of considered. Thoughtfully made clothing for the days that make up your life.</p><div className="hero-actions"><Link className="button-dark" href="/shop">Explore the collection <span>↗</span></Link><span className="hero-caption">SPRING / SUMMER 2026</span></div><div className="hero-stamp"><span>AR</span><small>EVERYDAY<br/>UNIFORM</small></div></div><div className="hero-image-wrap"><img className="hero-image" src="https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=1400&q=90" alt="Model wearing a refined black and white outfit"/><div className="hero-image-shade"/><div className="hero-image-label"><span>01 / 03</span><span>THE SOFT STRUCTURE EDIT</span></div><div className="hero-orbit"><span>MADE TO MOVE · MADE TO LAST · </span></div></div><div className="hero-index">AR CLOTHING <span>—</span> 001</div></section><section className="trust-strip"><span>DESIGNED WITH INTENTION</span><i>✳</i><span>MADE FOR EVERY DAY</span><i>✳</i><span>LESS, BUT BETTER</span><i>✳</i><span>WORN ON REPEAT</span></section><section className="home-section categories-section"><div className="section-heading"><div><div className="eyebrow">Find your everyday</div><h2>Good things<br/>in <em>good form.</em></h2></div><p>Build a wardrobe that feels like you.<br/>Start with what you reach for most.</p></div><CategoryShowcase/></section><section className="home-section featured-section"><div className="section-heading compact"><div><div className="eyebrow">A curated starting point</div><h2>Start with the <em>essentials.</em></h2></div><Link className="text-link" href="/shop">Shop all pieces <span>↗</span></Link></div><div className="product-grid">{products.filter(p=>p.featured).map((p,i)=><ProductCard product={p} index={i} key={p.slug}/>)}</div></section><section className="manifesto"><div className="manifesto-mark">AR</div><div className="manifesto-content"><div className="eyebrow">Our point of view</div><h2>Less noise.<br/><em>More feeling.</em></h2><p>We make pieces that earn their place: enduring shapes, honest materials, thoughtful details. Good clothes should feel easy from the first wear and get better with time.</p><Link href="/about" className="button-light">Meet AR Clothing <span>↗</span></Link></div><div className="manifesto-side">A WARDROBE<br/>WITH ROOM<br/>TO BREATHE.</div></section><section className="newsletter"><div><div className="eyebrow">A note from us</div><h2>Good things, <em>occasionally.</em></h2><p>New pieces, studio notes, and a little inspiration for wearing what you own.</p></div><form className="newsletter-form" action="mailto:hello@arclothing.example" method="get"><input aria-label="Email address" type="email" placeholder="Your email address" required/><button aria-label="Subscribe">Join us ↗</button></form></section></>;
+export default async function Home() {
+  const products = await getProducts();
+
+  return (
+    <>
+      {/* Interactive 3D Hero with Shoppable Lookbook Hotspots */}
+      <HeroSection allProducts={products} />
+
+      {/* Modern Kinetic Infinite Marquee Strip */}
+      <MarqueeStrip />
+
+      {/* Category Discovery with Interactive 3D Tilt Cards */}
+      <section className="home-section categories-section">
+        <div className="section-heading">
+          <div>
+            <div className="eyebrow">Find your everyday</div>
+            <h2>Good things<br />in <em>good form.</em></h2>
+          </div>
+          <p>Build a wardrobe that feels like you.<br />Start with what you reach for most.</p>
+        </div>
+        <CategoryShowcase />
+      </section>
+
+      {/* Interactive Curated Essentials with Real-time Filters & Quick View */}
+      <CuratedShowcase initialProducts={products} />
+
+      {/* Editorial Manifesto */}
+      <section className="manifesto modern-manifesto">
+        <div className="manifesto-mark">AR</div>
+        <div className="manifesto-content">
+          <div className="eyebrow">Our point of view</div>
+          <h2>Less noise.<br /><em>More feeling.</em></h2>
+          <p>
+            We make pieces that earn their place: enduring shapes, honest materials, and thoughtful details.
+            Good clothes should feel effortless from the first wear and get better with time.
+          </p>
+          <div className="manifesto-cta-row">
+            <Link href="/about" className="button-light">
+              Meet AR Clothing <span>↗</span>
+            </Link>
+            <Link href="/shop" className="manifesto-secondary-link">
+              Browse full archive ↗
+            </Link>
+          </div>
+        </div>
+        <div className="manifesto-side">
+          A WARDROBE<br />WITH ROOM<br />TO BREATHE.
+        </div>
+      </section>
+
+      {/* Modern Studio Newsletter */}
+      <section className="newsletter modern-newsletter">
+        <div>
+          <div className="eyebrow">A note from the studio</div>
+          <h2>Good things, <em>occasionally.</em></h2>
+          <p>New arrivals, studio notes, and a little quiet inspiration for wearing what you own.</p>
+        </div>
+        <form className="newsletter-form" action="mailto:www.honeyqureshi@gmail.com" method="get">
+          <input
+            aria-label="Email address"
+            type="email"
+            placeholder="Enter your email address..."
+            required
+          />
+          <button type="submit" aria-label="Subscribe to studio newsletter">
+            Join us ↗
+          </button>
+        </form>
+      </section>
+    </>
+  );
 }
