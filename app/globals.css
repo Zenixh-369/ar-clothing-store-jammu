@@ -1222,7 +1222,7 @@ body:has(.admin-shell) main,body:has(.admin-login) main{margin:0;padding:0;min-h
 }
 
 
-/* Ensure all products and images display in rich, natural full color */
+/* Product images: full natural colour, no grayscale */
 .product-image img,
 .product-card img,
 .product-image-container img,
@@ -1232,9 +1232,35 @@ body:has(.admin-shell) main,body:has(.admin-login) main{margin:0;padding:0;min-h
 .quickview-main-image img,
 .quickview-thumb-btn img,
 .cart-thumb img,
-.cart-item-thumb img,
-.category-card img,
-.category-tile img,
-.hero-image {
+.cart-item-thumb img {
   filter: none !important;
+}
+
+/* Hero image: grayscale for editorial look */
+.hero-image {
+  filter: grayscale(1);
+}
+.modern-hero-img {
+  filter: grayscale(1);
+}
+
+/* Category cover images: grayscale */
+.category-tile img,
+.category-card img {
+  filter: grayscale(1);
+  transition: transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1), filter 0.6s;
+}
+.category-tile:hover img,
+.category-card:hover img {
+  filter: grayscale(0.4);
+}
+
+/* Collection hero image: grayscale */
+.collection-image img {
+  filter: grayscale(1);
+}
+
+/* About page image: grayscale */
+.about-image img {
+  filter: grayscale(1);
 }
