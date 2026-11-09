@@ -11,7 +11,7 @@ const LOOKS = [
     category: 'SPRING / SUMMER 2026',
     headline: 'Wear the\nfeeling.',
     intro: 'An easier kind of considered. Thoughtfully made clothing for the days that make up your life.',
-    image: 'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=1400&q=90',
+    image: '/ar-storefront.png',
     hotspots: [
       {
         x: 48,
@@ -126,7 +126,7 @@ export default function HeroSection({ allProducts = [] }) {
   };
 
   return (
-    <section className="hero modern-hero">
+    <section className={`hero modern-hero ${activeLookIndex === 0 ? 'hero-storefront' : ''}`}>
       <div className="hero-copy">
         <div className="eyebrow">
           <span className="eyebrow-line" />
@@ -188,6 +188,10 @@ export default function HeroSection({ allProducts = [] }) {
           alt={activeLook.title}
         />
         <div className="hero-image-shade" />
+        {activeLookIndex === 0 && <>
+          <div className="hero-storefront-glow" />
+          <div className="hero-storefront-mark"><span>AR</span><small>JAMMU<br />EST. 2025</small></div>
+        </>}
 
         {/* Interactive Shoppable Hotspots */}
         {activeLook.hotspots.map((spot, i) => {
