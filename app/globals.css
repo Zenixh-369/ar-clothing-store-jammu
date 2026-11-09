@@ -1583,3 +1583,70 @@ body:has(.admin-shell) main,body:has(.admin-login) main{margin:0;padding:0;min-h
     opacity: 1 !important;
   }
 }
+
+/* Keep mobile layouts within the viewport and make the category controls wrap safely. */
+@media (max-width: 760px) {
+  html,
+  body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: clip;
+  }
+
+  main,
+  .home-section,
+  .categories-section,
+  .category-groups,
+  .category-group,
+  .section-heading,
+  .category-grid {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .category-group-heading {
+    min-width: 0;
+    gap: 10px;
+  }
+
+  .category-group-heading > div,
+  .category-group-heading h3,
+  .category-group-heading p {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .category-more-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .category-more-row > span:last-child {
+    display: none;
+  }
+
+  .category-more-row > span:first-child {
+    font-size: clamp(6px, 1.8vw, 8px);
+    white-space: nowrap;
+  }
+
+  .category-more {
+    max-width: 100%;
+    white-space: nowrap;
+  }
+
+  .hero-storefront .modern-hero-img {
+    object-position: 50% 50%;
+  }
+
+  .hero-image-wrap {
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .hero-orbit {
+    right: 10px;
+  }
+}
